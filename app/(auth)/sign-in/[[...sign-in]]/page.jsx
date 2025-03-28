@@ -28,7 +28,7 @@ export default function FullScreenGlassmorphismAuth() {
                 container: "w-full flex justify-center items-center",
               },
               elements: {
-                card: "w-full max-w-[100%] sm:max-w-[90%] md:max-w-[75%] lg:max-w-[65%] p-6 sm:p-6 md:p-10 shadow-lg",
+                card: "w-full max-w-[100%] sm:max-w-[90%] md:max-w-[100%] lg:max-w-[100%] p-6 sm:p-6 md:p-10 shadow-lg",
               },
             }}
           />
