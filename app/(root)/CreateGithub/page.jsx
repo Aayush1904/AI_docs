@@ -123,7 +123,7 @@ const CreatePage = () => {
       reset();
       await refresh();
       setLoading(false); 
-      router.push("/CreateGithub/project");
+      router.push(`/CreateGithub/project?id=${response.data.id}`);
     } catch (error) {
       console.error("❌ Error:", error);
       toast.error("❌ Failed to create project");

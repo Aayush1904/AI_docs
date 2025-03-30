@@ -13,7 +13,7 @@ const features = [
         animationData={Search}
         loop
         autoPlay
-        className="w-20 h-20 md:w-35 md:h-35"
+        className="w-30 h-30 md:w-40 md:h-40"
       />
     ),
     title: "Semantic Search",
@@ -26,7 +26,7 @@ const features = [
         animationData={MultiSource}
         loop
         autoPlay
-        className="w-20 h-20 md:w-35 md:h-35"
+        className="w-30 h-30 md:w-40 md:h-40"
       />
     ),
     title: "Multi-Source Integration",
@@ -39,7 +39,7 @@ const features = [
         animationData={QA}
         loop
         autoPlay
-        className="w-20 h-20 md:w-35 md:h-35"
+        className="w-30 h-30 md:w-40 md:h-40"
       />
     ),
     title: "AI-powered Q&A",
@@ -52,7 +52,7 @@ const features = [
         animationData={secure}
         loop
         autoPlay
-        className="w-20 h-20 md:w-35 md:h-35"
+        className="w-30 h-30 md:w-40 md:h-40"
       />
     ),
     title: "Fast & Secure",

@@ -115,4 +115,44 @@ router.post("/saveAnswer/:projectId", async (req, res) => {
   }
 });
 
+router.get("/questions/:projectId", async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    // Validate project exists
+    const projectExists = await prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!projectExists) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    // Get questions with related user data
+    const questions = await prisma.question.findMany({
+      where: { projectId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            imageUrl: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json(questions);
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+});
+
 export default router;

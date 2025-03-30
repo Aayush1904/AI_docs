@@ -24,7 +24,6 @@ import { useRouter } from "next/navigation";
 const items = [
   { title: "Dashboard", url: "/CreateGithub", icon: LayoutDashboard },
   { title: "Q&A", url: "/CreateGithub/qa", icon: Bot },
-  { title: "Meetings", url: "/CreateGithub/meetings", icon: Presentation },
 ];
 
 const AppSidebar = () => {

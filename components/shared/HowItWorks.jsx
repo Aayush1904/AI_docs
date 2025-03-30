@@ -28,7 +28,7 @@ export const StepWithStickyColorVariant1 = () => {
       </h2>
 
       {/* 📌 Step-by-Step Container */}
-      <div className="w-full max-w-lg">
+      <div className="w-[90%] ml-2 max-w-lg">
         {dataSteps.map((step, index) => (
           <StaticStep key={step.title} step={index + 1} title={step.title}>
             <CodeContainer>{step.code}</CodeContainer>

@@ -35,7 +35,7 @@ export default function AILiveSearch() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative w-full max-w-3xl"
+        className="relative w-[90%] max-w-3xl"
       >
         <input
           type="text"
