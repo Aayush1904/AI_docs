@@ -8,6 +8,10 @@ export const headerLinks = [
     route: "/search",
   },
   {
+    label: "Connect Github",
+    route: "/CreateGithub",
+  },
+  {
     label: "Contact",
     route: "/contact",
   },
