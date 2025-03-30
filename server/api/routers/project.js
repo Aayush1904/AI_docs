@@ -72,4 +72,47 @@ router.get("/commits/:projectId", async (req, res) => {
   }
 });
 
+router.post("/saveAnswer/:projectId", async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const { question, answer, fileReferences, userId } = req.body;
+
+    // Validate inputs
+    if (!question?.trim() || !answer?.trim() || !userId) {
+      return res
+        .status(400)
+        .json({ error: "Question, answer, and user ID are required" });
+    }
+
+    // Verify project exists
+    const projectExists = await prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!projectExists) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    // Create question (previously called answer)
+    const savedQuestion = await prisma.question.create({
+      data: {
+        question: question.trim(),
+        answer: answer.trim(),
+        fileReferences: fileReferences || null,
+        project: { connect: { id: projectId } },
+        user: { connect: { id: userId } },
+      },
+    });
+
+    return res.status(201).json(savedQuestion);
+  } catch (error) {
+    console.error("Error saving question:", error);
+    return res.status(500).json({
+      error: "Failed to save question",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+});
+
 export default router;
