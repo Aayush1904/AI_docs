@@ -88,7 +88,6 @@ import { toast } from "react-hot-toast";
 import { useAuth } from "@clerk/nextjs";
 import useProject from "@/hooks/use-project";
 import useRefresh from "@/hooks/use-refresh"; 
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 
 const CreatePage = () => {
@@ -96,7 +95,7 @@ const CreatePage = () => {
   const { userId, isLoaded } = useAuth();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
+  const {projectId} = useProject();
   // Refresh hook
   const refresh = useRefresh();
 
@@ -123,7 +122,7 @@ const CreatePage = () => {
       reset();
       await refresh();
       setLoading(false); 
-      router.push(`/CreateGithub/project?id=${response.data.id}`);
+      router.push(`/CreateGithub/project?id=${projectId}`);
     } catch (error) {
       console.error("❌ Error:", error);
       toast.error("❌ Failed to create project");

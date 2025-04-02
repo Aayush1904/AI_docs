@@ -136,7 +136,7 @@ const CommitLog = ({projectId}) => {
             {/* Timeline indicator */}
             <div className={cn(
                 commitIdx === commits.length - 1 ? 'h-6' : '-bottom-6', 
-                'absolute left-0 top-0 flex w-6 justify-center sm:block'
+                'absolute left-0 top-0 flex w-6 justify-center sm:block' , 'hidden'
             )}>
                 <div className='w-px translate-x-1 bg-gray-200 h-full'></div>
             </div>

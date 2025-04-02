@@ -47,8 +47,7 @@
 
 // export default function AIInput_03() {
 //     const [inputValue, setInputValue] = useState("");
-//     const [selectedItem, setSelectedItem] = useState(ITEMS[2].text); // Default: Make Shorter
-//     const [aiResponse, setAiResponse] = useState("");
+//     const [selectedItem, setSelectedItem] = useState(ITEMS[2].text);
 //     const [loading, setLoading] = useState(false);
 
 //     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
@@ -62,7 +61,6 @@
 //         if (!inputValue.trim()) return;
 
 //         setLoading(true);
-//         setAiResponse("");
 
 //         try {
 //             const response = await fetch("/api/ai-process", {
@@ -72,10 +70,9 @@
 //             });
 
 //             const data = await response.json();
-//             setAiResponse(data.result || "No response from AI.");
+//             setInputValue(data.result || inputValue); // Directly update the input field
 //         } catch (error) {
 //             console.error("Error:", error);
-//             setAiResponse("AI processing failed.");
 //         }
 
 //         setLoading(false);
@@ -110,13 +107,6 @@
 //                                 }}
 //                             />
 //                         </div>
-
-//                         {/* AI Response */}
-//                         {aiResponse && (
-//                             <div className="mt-3 p-3 rounded-lg border bg-gray-100 dark:bg-gray-900 text-sm text-black dark:text-white min-h-[50px]">
-//                                 <strong>AI Response:</strong> {aiResponse}
-//                             </div>
-//                         )}
 
 //                         {/* Floating AI Button */}
 //                         <div className="absolute left-3 bottom-4 z-10">
@@ -166,6 +156,7 @@
 //     );
 // }
 
+
 "use client";
 
 import {
@@ -182,14 +173,14 @@ import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 
 const ITEMS = [
     {
-        text: "Summary",
+        text: "Search Documents",  // Changed from Summary
         icon: Text,
         colors: {
             icon: "text-orange-600",
             border: "border-orange-500",
             bg: "bg-orange-100",
         },
-        prompt: "Summarize the following text concisely:",
+        type: "search"  // Added type distinction
     },
     {
         text: "Fix Spelling and Grammar",
@@ -199,6 +190,7 @@ const ITEMS = [
             border: "border-emerald-500",
             bg: "bg-emerald-100",
         },
+        type: "process",
         prompt: "Fix grammar and spelling mistakes in the following text:",
     },
     {
@@ -209,14 +201,16 @@ const ITEMS = [
             border: "border-purple-500",
             bg: "bg-purple-100",
         },
+        type: "process",
         prompt: "Make the following text shorter while keeping the meaning:",
     },
 ];
 
 export default function AIInput_03() {
     const [inputValue, setInputValue] = useState("");
-    const [selectedItem, setSelectedItem] = useState(ITEMS[2].text);
+    const [selectedItem, setSelectedItem] = useState(ITEMS[0].text); // Default to Search
     const [loading, setLoading] = useState(false);
+    const [searchResults, setSearchResults] = useState([]); // Added results state
 
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 52,
@@ -231,14 +225,29 @@ export default function AIInput_03() {
         setLoading(true);
 
         try {
-            const response = await fetch("/api/ai-process", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: `${currentItem.prompt} ${inputValue}` }),
-            });
+            if (currentItem.type === "search") {
+                // Handle document search
+                const response = await fetch("http://localhost:8000/api/search", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: inputValue }),
+                });
 
-            const data = await response.json();
-            setInputValue(data.result || inputValue); // Directly update the input field
+                const data = await response.json();
+                setSearchResults(data.results);
+            } else {
+                // Handle text processing
+                const response = await fetch("/api/ai-process", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        prompt: `${currentItem.prompt} ${inputValue}` 
+                    }),
+                });
+
+                const data = await response.json();
+                setInputValue(data.result || inputValue);
+            }
         } catch (error) {
             console.error("Error:", error);
         }
@@ -305,6 +314,23 @@ export default function AIInput_03() {
                     <CornerRightDown className="absolute right-3 top-3 w-4 h-4 transition-all dark:text-white" />
                 </div>
             </div>
+
+            {/* Search Results Display */}
+            {currentItem?.type === "search" && searchResults.length > 0 && (
+                <div className="mt-6 max-w-2xl mx-auto space-y-4">
+                    <h3 className="text-lg font-semibold">Search Results:</h3>
+                    {searchResults.map((result, index) => (
+                        <div key={index} className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {result.pdf_name} - Page {result.page}
+                            </div>
+                            <p className="mt-2 text-gray-800 dark:text-gray-200">
+                                {result.text}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* Feature Selection Buttons */}
             <div className="flex flex-wrap gap-1.5 mt-5 max-w-md mx-auto justify-start">
