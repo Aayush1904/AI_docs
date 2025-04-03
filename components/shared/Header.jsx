@@ -13,7 +13,7 @@ const Header = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-18'>
         <Link href="/" className='flex items-center'>
           {/* <Logo/> */}
-          <Image src = "/Logo.jpg" alt='Logo' height={150} width={150} />
+          <Image src = "/Logo_Neural.jpg" alt='Logo' height={150} width={150} />
         </Link>
 
         <SignedIn>
