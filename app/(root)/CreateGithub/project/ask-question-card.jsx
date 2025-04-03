@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useAuth } from '@clerk/nextjs';
+import RemoveMarkdown from 'remove-markdown';
 
 const AskQuestionCard = () => {
     const {project} = useProject();
@@ -87,37 +88,146 @@ const handleSaveAnswer = async () => {
     setIsSaving(false);
   }
 };
-    // Function to render markdown content with proper formatting
+
+    // const renderAnswerContent = () => {
+    //     if (!answer) return null;
+    //     return answer.split('\n\n').map((paragraph, index) => {
+    //         if (!paragraph.trim()) return null;
+    //         if (paragraph.startsWith('- ') || paragraph.startsWith('* ')) {
+    //             return (
+    //                 <ul key={index} className="list-disc pl-6 mb-4 space-y-1">
+    //                     {paragraph.split('\n').map((item, i) => (
+    //                         <li key={i}>
+    //                             {item.replace(/^[-*]\s+/, '')}
+    //                         </li>
+    //                     ))}
+    //                 </ul>
+    //             );
+    //         }
+    //         return (
+    //             <p key={index} className="mb-4leading-relaxed">
+    //                 {paragraph}
+    //             </p>
+    //         );
+    //     });
+    // };
+
     const renderAnswerContent = () => {
-        if (!answer) return null;
-        
-        // Split by double newlines to get paragraphs
-        return answer.split('\n\n').map((paragraph, index) => {
-            // Skip empty paragraphs
-            if (!paragraph.trim()) return null;
-            
-            // Check for bullet points
-            if (paragraph.startsWith('- ') || paragraph.startsWith('* ')) {
-                return (
-                    <ul key={index} className="list-disc pl-6 mb-4 space-y-1">
-                        {paragraph.split('\n').map((item, i) => (
-                            <li key={i}>
-                                {item.replace(/^[-*]\s+/, '')}
-                            </li>
-                        ))}
-                    </ul>
+    if (!answer) return null;
+
+    // First, clean the answer by removing standalone stars
+    // const cleanedAnswer = answer
+    //     .replace(/(^|\s)\*(\s|$)/g, ' ')  
+    //     .replace(/\*\*(.*?)\*\*/g, '$1') 
+    //     .replace(/\*(.*?)\*/g, '$1');     
+    const cleanedAnswer = RemoveMarkdown(answer);
+
+    // Split by lines to handle different content types
+    const lines = cleanedAnswer.split('\n');
+    const elements = [];
+    let currentList = [];
+    let currentCodeBlock = [];
+    let inCodeBlock = false;
+
+    for (const line of lines) {
+        // Handle code blocks
+        if (line.startsWith('```')) {
+            if (inCodeBlock) {
+                // End of code block
+                elements.push(
+                    <SyntaxHighlighter 
+                        language={currentCodeBlock[0]?.replace('```', '') || 'javascript'}
+                        style={atomDark}
+                        key={`code-${elements.length}`}
+                        className="rounded-md my-4"
+                    >
+                        {currentCodeBlock.slice(1).join('\n')}
+                    </SyntaxHighlighter>
+                );
+                currentCodeBlock = [];
+                inCodeBlock = false;
+            } else {
+                // Start of code block
+                inCodeBlock = true;
+            }
+            continue;
+        }
+
+        if (inCodeBlock) {
+            currentCodeBlock.push(line);
+            continue;
+        }
+
+        // Handle bullet points (now using cleaned lines without stars)
+        if (line.startsWith('- ') || line.trim().startsWith('-')) {
+            currentList.push(line.replace(/^-\s*/, ''));
+            continue;
+        }
+
+        // If we have items in current list but hit a non-list item
+        if (currentList.length > 0) {
+            elements.push(
+                <ul key={`list-${elements.length}`} className="list-disc pl-6 mb-4 space-y-1">
+                    {currentList.map((item, i) => (
+                        <li key={i}>{item}</li>
+                    ))}
+                </ul>
+            );
+            currentList = [];
+        }
+
+        // Handle regular text (with stars already removed)
+        if (line.trim()) {
+            // Check for headings
+            if (line.startsWith('## ')) {
+                elements.push(
+                    <h2 key={`heading-${elements.length}`} className="text-xl font-semibold mt-6 mb-3">
+                        {line.replace('## ', '')}
+                    </h2>
+                );
+            } else if (line.startsWith('### ')) {
+                elements.push(
+                    <h3 key={`heading-${elements.length}`} className="text-lg font-medium mt-4 mb-2">
+                        {line.replace('### ', '')}
+                    </h3>
+                );
+            } else {
+                elements.push(
+                    <p key={`para-${elements.length}`} className="mb-4 leading-relaxed">
+                        {line}
+                    </p>
                 );
             }
-            
-            // Regular paragraph
-            return (
-                <p key={index} className="mb-4leading-relaxed">
-                    {paragraph}
-                </p>
-            );
-        });
-    };
+        }
+    }
 
+    // Add any remaining list items
+    if (currentList.length > 0) {
+        elements.push(
+            <ul key={`list-${elements.length}`} className="list-disc pl-6 mb-4 space-y-1">
+                {currentList.map((item, i) => (
+                    <li key={i}>{item}</li>
+                ))}
+            </ul>
+        );
+    }
+
+    // Add any remaining code (shouldn't happen with proper markdown)
+    if (currentCodeBlock.length > 0) {
+        elements.push(
+            <SyntaxHighlighter 
+                language="javascript"
+                style={atomDark}
+                key={`code-${elements.length}`}
+                className="rounded-md my-4"
+            >
+                {currentCodeBlock.join('\n')}
+            </SyntaxHighlighter>
+        );
+    }
+
+    return elements;
+};
 
     return (
         <>
