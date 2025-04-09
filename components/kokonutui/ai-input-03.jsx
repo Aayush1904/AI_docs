@@ -156,12 +156,74 @@
 //     );
 // }
 
+// "use client";
+// import { useState, useEffect, useRef } from "react";
+
+// export default function AIInput_03() {
+//     const [query, setQuery] = useState("");
+//     const [results, setResults] = useState([]);
+
+//     const sendQuery = async () => {
+//         if (!query.trim()) return;
+
+//         try {
+//             const response = await fetch("http://127.0.0.1:5000/generate", {
+//                 method: "POST",
+//                 headers: { "Content-Type": "application/json" },
+//                 body: JSON.stringify({ query }),
+//             });
+
+//             if (response.ok) {
+//                 const data = await response.json();
+//                 setResults(data.results || []);
+//             } else {
+//                 console.error("Error:", response.statusText);
+//             }
+//         } catch (error) {
+//             console.error("Error:", error);
+//         }
+//     };
+
+
+//     return (
+//         <div className="p-6 max-w-5xl mx-auto bg-white rounded-xl shadow-md space-y-4 mt-6">
+//             <h1 className="text-xl font-bold">AI Search</h1>
+
+//             <div className="flex space-x-2">
+//                 <input
+//                     type="text"
+//                     value={query}
+//                     onChange={(e) => setQuery(e.target.value)}
+//                     placeholder="Enter search query"
+//                     className="w-full p-2 border rounded"
+//                 />
+//                 <button 
+//                     onClick={sendQuery} 
+//                     className="bg-blue-500 text-white px-4 py-2 rounded"
+//                 >
+//                     Search
+//                 </button>
+//             </div>
+
+//             <h3 className="text-lg font-semibold">Results:</h3>
+//             <ul className="list-disc pl-5 space-y-2">
+//                 {results.map((result, index) => (
+//                     <li key={index} className="border-b pb-2">
+//                         <strong className="block">{result.pdf_name} - Page {result.page}</strong>
+//                         <p className="text-gray-700">{result.text}</p>
+//                     </li>
+//                 ))}
+//             </ul>
+//         </div>
+//     );
+// }
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 export default function AIInput_03() {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState([]);
+    const [uploading, setUploading] = useState(false);
 
     const sendQuery = async () => {
         if (!query.trim()) return;
@@ -184,10 +246,47 @@ export default function AIInput_03() {
         }
     };
 
+    const handlePDFUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        setUploading(true);
+        try {
+            const response = await fetch("http://127.0.0.1:5000/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(`✅ ${data.message}`);
+            } else {
+                alert(`❌ Upload failed: ${data.error}`);
+            }
+        } catch (error) {
+            console.error("Upload Error:", error);
+            alert("❌ An error occurred during upload.");
+        }
+        setUploading(false);
+    };
 
     return (
         <div className="p-6 max-w-5xl mx-auto bg-white rounded-xl shadow-md space-y-4 mt-6">
             <h1 className="text-xl font-bold">AI Search</h1>
+
+            <div className="space-y-2">
+                <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handlePDFUpload}
+                    className="w-full p-2 border rounded"
+                />
+                {uploading && <p className="text-sm text-gray-500">Uploading...</p>}
+            </div>
 
             <div className="flex space-x-2">
                 <input
@@ -197,8 +296,8 @@ export default function AIInput_03() {
                     placeholder="Enter search query"
                     className="w-full p-2 border rounded"
                 />
-                <button 
-                    onClick={sendQuery} 
+                <button
+                    onClick={sendQuery}
                     className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
                     Search
