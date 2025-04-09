@@ -186,7 +186,7 @@ export default function AIInput_03() {
 
 
     return (
-        <div className="p-6 max-w-lg mx-auto bg-white rounded-xl shadow-md space-y-4">
+        <div className="p-6 max-w-5xl mx-auto bg-white rounded-xl shadow-md space-y-4 mt-6">
             <h1 className="text-xl font-bold">AI Search</h1>
 
             <div className="flex space-x-2">
