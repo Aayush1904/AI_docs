@@ -1,0 +1,83 @@
+AI_DOCS PROJECT - FEATURES LIST
+===============================
+
+USER-FACING FEATURES
+--------------------
+1. **AI-Powered Semantic Search**
+   - Search across documentation and code using natural language queries.
+   - Delivers context-aware, relevant results beyond keyword matching.
+
+2. **Multi-Source Integration**
+   - Connects with GitHub (and placeholders for Slack, JIRA, Notion, Confluence).
+   - Allows users to link their GitHub repositories for code analysis.
+
+3. **AI-Powered Q&A**
+   - Users can ask questions about their codebase and get instant, AI-generated answers.
+   - Answers include code references and context from the repository.
+
+4. **Commit Log Viewer**
+   - Displays recent commits from the linked GitHub repository.
+   - Shows commit messages, authors, dates, and AI-generated summaries.
+
+5. **Project Management**
+   - Users can create, select, and manage multiple projects.
+   - Each project can be linked to a different GitHub repository.
+
+6. **User Authentication**
+   - Secure sign-in and sign-up flows (Clerk integration).
+
+7. **Responsive UI/UX**
+   - Modern, mobile-friendly interface with Lottie animations and Tailwind CSS.
+   - Sidebar navigation for quick project and feature access.
+
+8. **FAQ and Onboarding**
+   - Built-in FAQ and onboarding steps for new users.
+
+
+BACKEND & INFRASTRUCTURE FEATURES
+----------------------------------
+1. **GitHub Repository Indexing**
+   - Loads and indexes code from GitHub repositories using the GitHub API.
+   - Generates vector embeddings and summaries for each file using Gemini AI.
+   - Stores embeddings and summaries in a PostgreSQL database (via Prisma).
+
+2. **Commit Summarization**
+   - Fetches recent commits from GitHub.
+   - Uses AI to summarize commit diffs for easier understanding.
+
+3. **AI-Powered Answer Generation**
+   - Uses Gemini AI to answer user questions based on indexed code context.
+   - Streams answers in real time.
+
+4. **Database Models**
+   - Users, Projects, Commits, SourceCodeEmbeddings, Questions (Q&A), User-Project relations.
+
+5. **API Endpoints**
+   - Project creation, commit fetching, Q&A saving and retrieval, etc.
+
+6. **Security**
+   - GitHub token support for increased API rate limits.
+   - Input validation and error handling throughout the backend.
+
+7. **Scalable Architecture**
+   - Modular Express.js backend, Next.js frontend, Prisma ORM, and vector search support.
+
+
+FUTURE SCOPE
+------------
+1. Multi-Source Knowledge Integration (Slack, Notion, Confluence, JIRA, Google Drive, Dropbox, OneDrive, etc.)
+2. AI-Powered Q&A with Contextual Memory (follow-up questions, chat)
+3. Automated Documentation Generation (README, API docs, code comments, summaries)
+4. Code/Document Visualization (class diagrams, dependency graphs, file trees, mind maps)
+5. Smart Notifications & Insights (outdated docs, missing READMEs, documentation suggestions)
+6. Collaborative Features (inline comments, annotations, review requests)
+7. Version-Aware Search (branches, tags, historical docs/code)
+8. Security & Compliance Insights (secret scanning, compliance alerts)
+9. Personalized Recommendations (relevant docs, code, best practices)
+10. API/SDK Integration (external tools can query search/Q&A)
+12. Onboarding & Guided Tours (interactive onboarding, feature tours)
+13. Analytics Dashboard (usage stats, search trends, doc coverage)
+14. Custom Embedding/Model Support (OpenAI, Cohere, local models)
+16. Enterprise/Team Features (RBAC, audit logs, SSO, bulk import/export, custom branding)
+
+These features are planned or possible future enhancements to make the platform more powerful, collaborative, and enterprise-ready. 
