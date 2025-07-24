@@ -32,6 +32,7 @@ model User{
   userToProjects UserToProject[]
   questionAsked Question[]
   comments Comment[]
+  integrationAccounts IntegrationAccount[]
 }
 
 model Project{
@@ -139,4 +140,25 @@ model Comment {
   @@index([projectId])
   @@index([questionId])
   @@index([commitId])
+}
+
+model IntegrationType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  accounts  IntegrationAccount[]
+}
+
+model IntegrationAccount {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  typeId          String
+  type            IntegrationType @relation(fields: [typeId], references: [id])
+  accessToken     String
+  refreshToken    String?
+  expiresAt       DateTime?
+  metadata        Json?
 }

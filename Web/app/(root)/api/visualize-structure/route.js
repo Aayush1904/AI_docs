@@ -1,8 +1,21 @@
+import { db } from "../../../../server/db.js";
+
 export async function POST(req) {
   try {
-    const { projectName, fileList } = await req.json();
-    // For demo: mock file list if not provided
-    const files = fileList || [
+    const { projectId, projectName, fileList } = await req.json();
+    let files = fileList;
+    // If no fileList provided, fetch from DB using projectId
+    if (!files && projectId) {
+      // Fetch all file names for this project from SourceCodeEmbedding
+      files = (
+        await db.sourceCodeEmbedding.findMany({
+          where: { projectId },
+          select: { fileName: true },
+        })
+      ).map((f) => f.fileName);
+    }
+    // Fallback to mock if still no files
+    files = files || [
       "README.md",
       "package.json",
       "src/index.js",

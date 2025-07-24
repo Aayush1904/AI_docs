@@ -589,7 +589,7 @@ function VisualizeModal({ project }) {
     setMermaid("");
     setEditValue("");
     let url = "/api/visualize-structure";
-    let body = { projectName: project.name };
+    let body = { projectId: project.id, projectName: project.name };
     if (type === "class-diagram") url = "/api/visualize-class-diagram";
     if (type === "dependency-graph") url = "/api/visualize-dependency-graph";
     if (type === "mind-map") url = "/api/visualize-mind-map";
@@ -695,15 +695,11 @@ function VisualizeModal({ project }) {
                     onChange={e => setEditValue(e.target.value)}
                   />
                 ) : (
-                  tab === "class-diagram" ? (
-                    <div className="w-full max-w-[90vw] sm:max-w-[700px] mx-auto overflow-x-auto rounded border bg-white p-1 sm:p-2 mt-4" style={{ zoom: 0.8 }}>
+                  <div className="w-full max-w-full overflow-x-auto rounded border bg-white p-1 sm:p-2 mt-4 flex justify-center">
+                    <div style={{ width: '100%', minWidth: 320, maxWidth: 1200 }}>
                       <MermaidChart chart={mermaid} />
                     </div>
-                  ) : (
-                    <div className="w-full overflow-x-auto rounded border bg-white p-1 sm:p-2 mt-4">
-                      <MermaidChart chart={mermaid} />
-                    </div>
-                  )
+                  </div>
                 )}
               </>
             ) : (
