@@ -6,12 +6,13 @@ import { ExternalLink, Github, FileText, Download, BarChart2 } from "lucide-reac
 import Link from "next/link";
 import CommitLog from "./commit-log";
 import AskQuestionCard from "./ask-question-card";
+import SemanticSearchCard from "./semantic-search-card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import mermaid from "mermaid";
 import { toast } from 'react-hot-toast';
 import dynamic from "next/dynamic";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 function MermaidChart({ chart }) {
@@ -121,14 +122,14 @@ const ProjectPage = () => {
         <div className="border rounded-xl bg-white shadow-sm p-6">
           <h2 className="text-xl font-semibold mb-2 text-primary">AI Documentation Tools</h2>
           <p className="text-gray-600 mb-4">Generate, comment, summarize, and visualize your code and docs with a single click. Powered by Gemini AI.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="flex flex-wrap gap-3">
             <GenerateReadmeButton project={project} />
             <GenerateApiDocsButton project={project} />
             <GenerateCodeCommentsButton />
             <GenerateFileSummaryButton />
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2 border-primary text-primary hover:bg-primary/10 bg-white w-full">
+                <Button variant="outline" className="flex items-center gap-2 border-primary text-primary hover:bg-primary/10 bg-white">
                   <BarChart2 className="w-5 h-5" />
                   Visualize
                 </Button>
@@ -139,9 +140,22 @@ const ProjectPage = () => {
         </div>
       </div>
 
-      {/* Question Card - Full width on mobile */}
+      {/* RAG Pipeline - Ask Questions Section */}
       <div className="mb-8">
-        <AskQuestionCard />
+        <div className="border rounded-xl bg-white shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-2 text-primary">Ask Questions About Your Code</h2>
+          <p className="text-gray-600 mb-4">Get detailed answers about your codebase using our RAG pipeline. Ask questions about functions, classes, architecture, and more.</p>
+          <AskQuestionCard />
+        </div>
+      </div>
+
+      {/* Semantic Search Section */}
+      <div className="mb-8">
+        <div className="border rounded-xl bg-white shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-2 text-primary">Fast Semantic Search</h2>
+          <p className="text-gray-600 mb-4">Quickly search through your repository using natural language. Find code snippets, files, and documentation instantly.</p>
+          <SemanticSearchCard />
+        </div>
       </div>
 
       {/* Commit Log - Full width on all screens */}
