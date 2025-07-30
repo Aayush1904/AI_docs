@@ -14,6 +14,8 @@ export async function POST(request) {
 
     // Ensure the data directory exists
     const dataDir = path.join(process.cwd(), "../Semantic-Search/data");
+    console.log("Current working directory:", process.cwd());
+    console.log("Data directory path:", dataDir);
     await mkdir(dataDir, { recursive: true });
 
     const uploadedFiles = [];
@@ -27,7 +29,9 @@ export async function POST(request) {
         // Convert file to buffer and save
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
+        console.log("Saving file:", fileName, "to:", filePath);
         await writeFile(filePath, buffer);
+        console.log("File saved successfully:", fileName);
 
         uploadedFiles.push(fileName);
       }

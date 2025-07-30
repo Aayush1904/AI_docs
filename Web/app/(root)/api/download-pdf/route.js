@@ -17,6 +17,7 @@ export async function GET(request) {
       "../Semantic-Search/data",
       fileName
     );
+    console.log("PDF path:", pdfPath);
 
     try {
       const fileBuffer = await readFile(pdfPath);

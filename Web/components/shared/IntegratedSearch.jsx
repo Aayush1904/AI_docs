@@ -110,7 +110,9 @@ export default function IntegratedSearch() {
   };
 
   const handleFileUpload = (event) => {
+    console.log('File upload event triggered');
     const files = Array.from(event.target.files);
+    console.log('Files selected:', files.map(f => ({ name: f.name, size: f.size, type: f.type })));
     setUploadedFiles(prev => [...prev, ...files]);
   };
 
@@ -118,6 +120,7 @@ export default function IntegratedSearch() {
     if (uploadedFiles.length === 0) return;
 
     try {
+      console.log('Processing documents:', uploadedFiles.map(f => f.name));
       const formData = new FormData();
       uploadedFiles.forEach(file => {
         formData.append('files', file);
@@ -135,6 +138,8 @@ export default function IntegratedSearch() {
         setUploadedFiles([]);
       } else {
         console.error('Failed to process documents');
+        const errorData = await response.json();
+        console.error('Error details:', errorData);
       }
     } catch (error) {
       console.error('Error processing documents:', error);
