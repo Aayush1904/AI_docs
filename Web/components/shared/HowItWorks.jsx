@@ -6,7 +6,7 @@ import { cn } from "../../lib/utils"; // Utility function for handling className
 const dataSteps = [
   {
     title: "Connect Your Docs", // Step title
-    code: "OAuth with Notion, Slack, GitHub", // Short description
+    code: "OAuth with Notion, GitHub, JIRA", // Short description
   },
   {
     title: "AI Indexes & Understands Content",

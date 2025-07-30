@@ -83,12 +83,12 @@ export default function Home() {
             transition={{ duration: 1.2 }}
             className="flex justify-center"
           >
-            <Lottie
+            {/* <Lottie
               animationData={aiBotAnimation}
               loop
               autoPlay
               className="w-full max-w-md md:max-w-lg"
-            />
+            /> */}
           </motion.div>
         </div>
       </section>

@@ -12,6 +12,10 @@ export const headerLinks = [
     route: "/CreateGithub",
   },
   {
+    label: "Knowledge Integration",
+    route: "/knowledge-integration",
+  },
+  {
     label: "Contact",
     route: "/contact",
   },

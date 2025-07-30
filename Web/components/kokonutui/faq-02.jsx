@@ -13,7 +13,7 @@ const faqs = [
   {
     question: "Which platforms does NeuralDocs integrate with?",
     answer:
-      "NeuralDocs seamlessly connects with Slack, GitHub, JIRA, Notion, Confluence, and other internal documentation tools, making your knowledge base instantly accessible in one place.",
+      "NeuralDocs seamlessly connects with Notion, GitHub, JIRA, Google Drive, Confluence, and other internal documentation tools, making your knowledge base instantly accessible in one place.",
   },
   {
     question: "Is my data secure with NeuralDocs?",

@@ -31,7 +31,7 @@ const features = [
     ),
     title: "Multi-Source Integration",
     description:
-      "Seamlessly connects with tools like Slack, GitHub, JIRA, Notion, and Confluence, making all your company knowledge instantly accessible.",
+      "Seamlessly connects with tools like Notion, GitHub, JIRA, Google Drive, and Confluence, making all your company knowledge instantly accessible.",
   },
   {
     icon: (
