@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import GoogleDriveIntegration from "@/lib/integrations/google-drive.js";
 import SlackIntegration from "@/lib/integrations/slack.js";
 import JiraIntegration from "@/lib/integrations/jira.js";
+import NotionIntegration from "@/lib/integrations/notion.js";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -25,6 +26,11 @@ export async function GET(request) {
       case "jira":
         const jira = new JiraIntegration();
         authUrl = jira.generateAuthUrl();
+        break;
+
+      case "notion":
+        const notion = new NotionIntegration();
+        authUrl = notion.generateAuthUrl();
         break;
 
       default:
@@ -83,6 +89,14 @@ export async function POST(request) {
         console.log("JIRA resources:", resources);
         tokens.cloudId = resources[0]?.id; // Use first accessible resource
         console.log("Selected cloud ID:", tokens.cloudId);
+        break;
+
+      case "notion":
+        const notion = new NotionIntegration();
+        console.log("Processing Notion Internal Integration...");
+        // For internal integrations, we don't need a code, just get tokens directly
+        tokens = await notion.getTokensFromCode("internal");
+        console.log("Notion tokens obtained:", Object.keys(tokens));
         break;
 
       default:

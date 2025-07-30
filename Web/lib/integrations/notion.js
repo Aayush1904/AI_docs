@@ -3,37 +3,25 @@ import axios from "axios";
 class NotionIntegration {
   constructor() {
     this.baseURL = "https://api.notion.com/v1";
+    this.internalSecret = process.env.secret_NOTION_INTERNAL_SECRET;
   }
 
-  // Generate OAuth URL for Notion
+  // Generate auth URL for Notion (using internal integration)
   generateAuthUrl() {
-    const clientId = process.env.NOTION_CLIENT_ID;
-    const redirectUri = process.env.NOTION_REDIRECT_URI;
-
-    return `https://api.notion.com/v1/oauth/authorize?client_id=${clientId}&response_type=code&owner=user&redirect_uri=${redirectUri}`;
+    // For internal integrations, we don't need OAuth flow
+    // The internal secret is used directly
+    return "notion://internal-integration";
   }
 
-  // Exchange code for tokens
+  // Get tokens using internal secret
   async getTokensFromCode(code) {
     try {
-      const response = await axios.post(
-        "https://api.notion.com/v1/oauth/token",
-        {
-          grant_type: "authorization_code",
-          code: code,
-          redirect_uri: process.env.NOTION_REDIRECT_URI,
-        },
-        {
-          headers: {
-            Authorization: `Basic ${Buffer.from(
-              `${process.env.NOTION_CLIENT_ID}:${process.env.NOTION_CLIENT_SECRET}`
-            ).toString("base64")}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      return response.data;
+      // For internal integrations, we return the internal secret as the access token
+      return {
+        access_token: this.internalSecret,
+        token_type: "Bearer",
+        workspace_id: process.env.NOTION_WORKSPACE_ID || "default",
+      };
     } catch (error) {
       console.error("Error getting Notion tokens:", error);
       throw error;
@@ -43,7 +31,15 @@ class NotionIntegration {
   // Search pages in Notion
   async searchPages(query, accessToken, pageSize = 20) {
     try {
-      const response = await axios.post(
+      // Use the internal secret if no access token provided
+      const token = accessToken || this.internalSecret;
+
+      if (!token) {
+        throw new Error("No Notion access token or internal secret provided");
+      }
+
+      // First, try to search for pages
+      const pageResponse = await axios.post(
         `${this.baseURL}/search`,
         {
           query: query,
@@ -55,17 +51,48 @@ class NotionIntegration {
         },
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${token}`,
             "Notion-Version": "2022-06-28",
             "Content-Type": "application/json",
           },
         }
       );
 
+      // Also search for databases
+      const databaseResponse = await axios.post(
+        `${this.baseURL}/search`,
+        {
+          query: query,
+          filter: {
+            property: "object",
+            value: "database",
+          },
+          page_size: pageSize,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Notion-Version": "2022-06-28",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Combine results
+      const allResults = [
+        ...(pageResponse.data.results || []),
+        ...(databaseResponse.data.results || []),
+      ];
+
       return {
-        pages: response.data.results || [],
-        total: response.data.total || 0,
-        hasMore: response.data.has_more || false,
+        pages: allResults,
+        total:
+          (pageResponse.data.total || 0) + (databaseResponse.data.total || 0),
+        hasMore:
+          pageResponse.data.has_more ||
+          false ||
+          databaseResponse.data.has_more ||
+          false,
       };
     } catch (error) {
       console.error("Error searching Notion pages:", error);
@@ -76,9 +103,15 @@ class NotionIntegration {
   // Get page content
   async getPageContent(pageId, accessToken) {
     try {
+      const token = accessToken || this.internalSecret;
+
+      if (!token) {
+        throw new Error("No Notion access token or internal secret provided");
+      }
+
       const response = await axios.get(`${this.baseURL}/pages/${pageId}`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token}`,
           "Notion-Version": "2022-06-28",
         },
       });
@@ -93,9 +126,15 @@ class NotionIntegration {
   // Get user info
   async getUserInfo(accessToken) {
     try {
+      const token = accessToken || this.internalSecret;
+
+      if (!token) {
+        throw new Error("No Notion access token or internal secret provided");
+      }
+
       const response = await axios.get(`${this.baseURL}/users/me`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token}`,
           "Notion-Version": "2022-06-28",
         },
       });

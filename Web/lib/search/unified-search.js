@@ -1,9 +1,11 @@
 import GoogleDriveIntegration from "../integrations/google-drive.js";
 import JiraIntegration from "../integrations/jira.js";
+import NotionIntegration from "../integrations/notion.js";
 
 class UnifiedSearchService {
   constructor() {
     this.googleDrive = new GoogleDriveIntegration();
+    this.notion = new NotionIntegration();
     this.cache = new Map(); // Simple in-memory cache
     this.searchHistory = new Map(); // Track search history per user
   }
@@ -323,15 +325,39 @@ class UnifiedSearchService {
       console.log("Query:", query);
       console.log("Access token present:", !!accessToken);
 
-      // For now, return mock data since we haven't implemented the Notion API integration
-      const mockNotionData = this.getMockNotionResults(query);
+      const result = await this.notion.searchPages(query, accessToken);
+
       console.log("Notion search result:", {
         query: query,
-        pagesFound: mockNotionData.pages.length,
-        samplePages: mockNotionData.pages.slice(0, 3).map((p) => p.title),
+        pagesFound: result.pages.length,
+        samplePages: result.pages
+          .slice(0, 3)
+          .map(
+            (p) =>
+              p.properties?.title?.title?.[0]?.plain_text ||
+              p.properties?.Name?.title?.[0]?.plain_text ||
+              "Untitled"
+          ),
       });
 
-      return mockNotionData;
+      return {
+        pages: result.pages.map((item) => ({
+          id: item.id,
+          title: this.extractNotionTitle(item),
+          source: "Notion",
+          type: item.object === "database" ? "database" : "page",
+          workspace: "Notion Workspace",
+          url: item.url,
+          created: item.created_time,
+          updated: item.last_edited_time,
+          snippet: this.extractPageSnippet(item),
+          icon: item.object === "database" ? "database" : "file-text",
+          category: item.object === "database" ? "databases" : "pages",
+        })),
+        pagesFound: result.pages.length,
+        total: result.total,
+        hasMore: result.hasMore,
+      };
     } catch (error) {
       console.error("Error searching Notion:", error);
       throw error;
@@ -779,6 +805,59 @@ class UnifiedSearchService {
       ],
       pagesFound: 3,
     };
+  }
+
+  // Extract title from Notion page or database
+  extractNotionTitle(item) {
+    if (item.object === "database") {
+      return (
+        item.title?.[0]?.plain_text ||
+        item.properties?.Name?.title?.[0]?.plain_text ||
+        "Untitled Database"
+      );
+    }
+
+    return (
+      item.properties?.title?.title?.[0]?.plain_text ||
+      item.properties?.Name?.title?.[0]?.plain_text ||
+      "Untitled"
+    );
+  }
+
+  // Extract snippet from Notion page or database
+  extractPageSnippet(item) {
+    if (item.object === "database") {
+      const title =
+        item.title?.[0]?.plain_text ||
+        item.properties?.Name?.title?.[0]?.plain_text ||
+        "";
+
+      const description = item.description?.[0]?.plain_text || "";
+
+      return title
+        ? `${title}${description ? ` - ${description}` : ""}`
+        : "Notion database";
+    }
+
+    // For pages, try to extract content from various Notion page properties
+    const title =
+      item.properties?.title?.title?.[0]?.plain_text ||
+      item.properties?.Name?.title?.[0]?.plain_text ||
+      "";
+
+    const description =
+      item.properties?.Description?.rich_text?.[0]?.plain_text ||
+      item.properties?.description?.rich_text?.[0]?.plain_text ||
+      "";
+
+    const tags =
+      item.properties?.Tags?.multi_select?.map((tag) => tag.name).join(", ") ||
+      item.properties?.tags?.multi_select?.map((tag) => tag.name).join(", ") ||
+      "";
+
+    // Combine available information
+    const parts = [title, description, tags].filter(Boolean);
+    return parts.length > 0 ? parts.join(" - ") : "Notion page";
   }
 
   // Detect which source the user is asking about

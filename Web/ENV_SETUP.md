@@ -30,6 +30,23 @@ JIRA_CLIENT_SECRET=your_jira_client_secret_here
 JIRA_REDIRECT_URI=http://localhost:3000/oauth-callback?source=jira
 ```
 
+### Notion Integration (Choose One)
+
+**Option 1: Internal Integration (Limited Access)**
+
+```bash
+NOTION_INTERNAL_SECRET=your_notion_internal_secret_here
+NOTION_WORKSPACE_ID=your_notion_workspace_id_here
+```
+
+**Option 2: OAuth Integration (Full Access)**
+
+```bash
+NOTION_CLIENT_ID=your_notion_client_id_here
+NOTION_CLIENT_SECRET=your_notion_client_secret_here
+NOTION_REDIRECT_URI=http://localhost:3000/oauth-callback?source=notion
+```
+
 ## How to Get OAuth Credentials
 
 ### Google Drive Setup
@@ -88,6 +105,44 @@ JIRA_REDIRECT_URI=http://localhost:3000/oauth-callback?source=jira
 8. Go to "Settings" → "App details"
 9. Copy the **Client ID** and **Client Secret**
 10. **Important**: Make sure your app is **approved** or you're using it in a development environment
+
+### Notion Integration Setup
+
+#### Option 1: Internal Integration (Limited Access)
+
+1. Go to [Notion Developers](https://www.notion.so/my-integrations)
+2. Click "New integration"
+3. Fill in the integration details:
+   - **Name**: Your integration name (e.g., "NeuralDocs Integration")
+   - **Associated workspace**: Select your workspace
+   - **Capabilities**: Enable the capabilities you need:
+     - Read content
+     - Update content
+     - Insert content
+     - Read comments
+     - Insert comments
+4. Click "Submit"
+5. Copy the **Internal Integration Secret** (starts with `secret_`)
+6. **Important**: Share your integration with the pages/databases you want to access
+
+#### Option 2: OAuth Integration (Full Access)
+
+1. Go to [Notion Developers](https://www.notion.so/my-integrations)
+2. Click "New integration"
+3. Fill in the integration details:
+   - **Name**: Your integration name (e.g., "NeuralDocs Integration")
+   - **Associated workspace**: Select your workspace
+   - **Capabilities**: Enable the capabilities you need:
+     - Read content
+     - Update content
+     - Insert content
+     - Read comments
+     - Insert comments
+4. Click "Submit"
+5. Go to "OAuth & Permissions" in the sidebar
+6. Add redirect URL: `http://localhost:3000/oauth-callback?source=notion`
+7. Copy the **Client ID** and **Client Secret**
+8. **Note**: OAuth gives access to all user content without manual sharing
 
 ## Security Notes
 

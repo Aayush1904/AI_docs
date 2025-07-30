@@ -74,62 +74,91 @@ const KnowledgeIntegration = () => {
   const handleConnect = async (sourceId) => {
     setConnectingStates(prev => ({ ...prev, [sourceId]: true }));
     try {
-      // Get OAuth URL
-      const authResponse = await fetch(`/api/integrations/auth?source=${sourceId}&action=auth_url`);
-      const authData = await authResponse.json();
-      
-      if (authData.success) {
-        // Open OAuth popup
-        const popup = window.open(
-          authData.authUrl,
-          'oauth-popup',
-          'width=500,height=600,scrollbars=yes,resizable=yes'
-        );
-
-        // Listen for OAuth callback
-        const checkClosed = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(checkClosed);
-            setConnectingStates(prev => ({ ...prev, [sourceId]: false }));
-          }
-        }, 1000);
-
-        // Listen for message from popup
-        window.addEventListener('message', async (event) => {
-          if (event.data.type === 'OAUTH_SUCCESS') {
-            const { code, source } = event.data;
-            
-            // Exchange code for tokens
-            const tokenResponse = await fetch('/api/integrations/auth', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                source,
-                code,
-                state: event.data.state
-              }),
-            });
-            
-            const tokenData = await tokenResponse.json();
-            
-            if (tokenData.success) {
-              // Store tokens (in real app, store in database)
-              console.log('Storing tokens for', source, ':', tokenData.tokens);
-              localStorage.setItem(`${source}_tokens`, JSON.stringify(tokenData.tokens));
-              setConnectedSources(prev => [...prev, sourceId]);
-              setUserIntegrations(prev => ({
-                ...prev,
-                [source]: tokenData.tokens
-              }));
-              
-              // Close popup
-              popup.close();
-              clearInterval(checkClosed);
-            }
-          }
+      if (sourceId === "notion") {
+        // For Notion internal integration, directly get tokens
+        const tokenResponse = await fetch('/api/integrations/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            source: sourceId,
+            code: "internal",
+            state: "internal"
+          }),
         });
+        
+        const tokenData = await tokenResponse.json();
+        
+        if (tokenData.success) {
+          // Store tokens (in real app, store in database)
+          console.log('Storing tokens for', sourceId, ':', tokenData.tokens);
+          localStorage.setItem(`${sourceId}_tokens`, JSON.stringify(tokenData.tokens));
+          setConnectedSources(prev => [...prev, sourceId]);
+          setUserIntegrations(prev => ({
+            ...prev,
+            [sourceId]: tokenData.tokens
+          }));
+        }
+        setConnectingStates(prev => ({ ...prev, [sourceId]: false }));
+      } else {
+        // Get OAuth URL for other integrations
+        const authResponse = await fetch(`/api/integrations/auth?source=${sourceId}&action=auth_url`);
+        const authData = await authResponse.json();
+        
+        if (authData.success) {
+          // Open OAuth popup
+          const popup = window.open(
+            authData.authUrl,
+            'oauth-popup',
+            'width=500,height=600,scrollbars=yes,resizable=yes'
+          );
+
+          // Listen for OAuth callback
+          const checkClosed = setInterval(() => {
+            if (popup.closed) {
+              clearInterval(checkClosed);
+              setConnectingStates(prev => ({ ...prev, [sourceId]: false }));
+            }
+          }, 1000);
+
+          // Listen for message from popup
+          window.addEventListener('message', async (event) => {
+            if (event.data.type === 'OAUTH_SUCCESS') {
+              const { code, source } = event.data;
+              
+              // Exchange code for tokens
+              const tokenResponse = await fetch('/api/integrations/auth', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  source,
+                  code,
+                  state: event.data.state
+                }),
+              });
+              
+              const tokenData = await tokenResponse.json();
+              
+              if (tokenData.success) {
+                // Store tokens (in real app, store in database)
+                console.log('Storing tokens for', source, ':', tokenData.tokens);
+                localStorage.setItem(`${source}_tokens`, JSON.stringify(tokenData.tokens));
+                setConnectedSources(prev => [...prev, sourceId]);
+                setUserIntegrations(prev => ({
+                  ...prev,
+                  [source]: tokenData.tokens
+                }));
+                
+                // Close popup
+                popup.close();
+                clearInterval(checkClosed);
+              }
+            }
+          });
+        }
       }
     } catch (error) {
       console.error('Connection error:', error);
