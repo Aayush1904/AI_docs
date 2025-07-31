@@ -80,9 +80,9 @@ const Header = () => {
   return (
     <header className='w-full bg-white shadow-md'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-18'>
-        <Link href="/" className='flex items-center'>
-          {/* <Logo/> */}
-          <Image src = "/Neural_docs.jpeg" alt='Logo' height={65} width={65} />
+        <Link href="/" className='flex items-center gap-3'>
+          <Image src="/Neural_docs.jpeg" alt='Logo' height={65} width={65} />
+          <span className="text-lg md:text-2xl font-bold text-black">Neural Docs</span>
         </Link>
 
         <SignedIn>
