@@ -15,8 +15,4 @@ export const headerLinks = [
     label: "Knowledge Integration",
     route: "/knowledge-integration",
   },
-  {
-    label: "Contact",
-    route: "/contact",
-  },
 ];

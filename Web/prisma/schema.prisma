@@ -15,6 +15,19 @@ datasource db {
   extensions = [vector]
 }
 
+enum AccessLevel {
+  public
+  private
+  restricted
+  confidential
+}
+
+enum UserRole {
+  admin
+  manager
+  user
+  viewer
+}
 
 model User{
   id String @id @default(cuid())
@@ -28,11 +41,20 @@ model User{
   emailAddress String @unique
 
   credits Int @default(150)
+  
+  // Access control fields
+  role UserRole @default(user)
+  permissions Json?
 
   userToProjects UserToProject[]
   questionAsked Question[]
   comments Comment[]
   integrationAccounts IntegrationAccount[]
+  
+  // Document access relationships
+  ownedDocuments Document[]
+  documentAccesses DocumentAccess[]
+  grantedAccesses DocumentAccess[] @relation("AccessGrantedBy")
 }
 
 model Project{
@@ -161,4 +183,52 @@ model IntegrationAccount {
   refreshToken    String?
   expiresAt       DateTime?
   metadata        Json?
+}
+
+model Document {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  name String
+  fileName String
+  filePath String
+  fileSize Int
+  mimeType String
+  
+  // Access control
+  accessLevel AccessLevel @default(public)
+  uploadedBy String
+  user User @relation(fields: [uploadedBy], references: [id])
+  
+  // Document processing status
+  isProcessed Boolean @default(false)
+  processingStatus String @default("pending") // pending, processing, completed, failed
+  
+  // Vector store reference
+  vectorId String?
+  
+  // Access relationships
+  accesses DocumentAccess[]
+}
+
+model DocumentAccess {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  documentId String
+  userId String
+  accessLevel AccessLevel
+  grantedBy String
+  expiresAt DateTime?
+  
+  // Relationships
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grantedByUser User @relation("AccessGrantedBy", fields: [grantedBy], references: [id])
+  
+  @@unique([documentId, userId])
+  @@index([documentId])
+  @@index([userId])
 }

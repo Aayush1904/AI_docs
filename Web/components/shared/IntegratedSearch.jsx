@@ -16,8 +16,14 @@ import {
   Send,
   Bot,
   User,
-  Loader2
+  Loader2,
+  Filter,
+  Settings,
+  Shield,
+  Users
 } from "lucide-react";
+import AccessLevelSelector, { AccessLevelBadge } from "./AccessLevelSelector";
+import DocumentManager from "./DocumentManager";
 
 export default function IntegratedSearch() {
   const [activeTab, setActiveTab] = useState("search");
@@ -30,6 +36,8 @@ export default function IntegratedSearch() {
   const [isSearching, setIsSearching] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [selectedAccessLevel, setSelectedAccessLevel] = useState("all");
+  const [showDocumentManager, setShowDocumentManager] = useState(false);
   const chatEndRef = useRef(null);
 
   // Auto-scroll to bottom of chat
@@ -47,7 +55,8 @@ export default function IntegratedSearch() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           query: searchQuery,
-          mode: 'search'
+          mode: 'search',
+          accessLevel: selectedAccessLevel !== 'all' ? selectedAccessLevel : undefined
         }),
       });
 
@@ -78,7 +87,8 @@ export default function IntegratedSearch() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           query: chatQuery,
-          mode: 'chatbot'
+          mode: 'chatbot',
+          accessLevel: selectedAccessLevel !== 'all' ? selectedAccessLevel : undefined
         }),
       });
 
@@ -165,7 +175,7 @@ export default function IntegratedSearch() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="search" className="flex items-center gap-2">
             <Search className="h-4 w-4" />
             Hybrid Search
@@ -173,6 +183,10 @@ export default function IntegratedSearch() {
           <TabsTrigger value="chatbot" className="flex items-center gap-2">
             <MessageSquare className="h-4 w-4" />
             Document Chatbot
+          </TabsTrigger>
+          <TabsTrigger value="documents" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Document Manager
           </TabsTrigger>
         </TabsList>
 
@@ -188,6 +202,19 @@ export default function IntegratedSearch() {
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Access Level Filter */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm font-medium">Access Level:</span>
+                </div>
+                <AccessLevelSelector
+                  value={selectedAccessLevel}
+                  onChange={setSelectedAccessLevel}
+                  size="sm"
+                />
+              </div>
+
               <div className="flex gap-2">
                 <Input
                   placeholder="Enter your search query..."
@@ -239,6 +266,9 @@ export default function IntegratedSearch() {
                                     Score: {result.score.toFixed(3)}
                                   </Badge>
                                 )}
+                                {result.accessLevel && (
+                                  <AccessLevelBadge level={result.accessLevel} size="sm" />
+                                )}
                               </div>
                               <p className="text-sm text-gray-700 leading-relaxed">
                                 {result.payload?.text || result.text || result.summary || 'No content available'}
@@ -283,6 +313,19 @@ export default function IntegratedSearch() {
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Access Level Filter for Chat */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm font-medium">Access Level:</span>
+                </div>
+                <AccessLevelSelector
+                  value={selectedAccessLevel}
+                  onChange={setSelectedAccessLevel}
+                  size="sm"
+                />
+              </div>
+
               <ScrollArea className="h-96 border rounded-lg p-4">
                 <div className="space-y-4">
                   {chatMessages.map((message, index) => (
@@ -317,6 +360,9 @@ export default function IntegratedSearch() {
                                     <span className="font-medium">
                                       {source.pdf_name} - Page {source.page}
                                     </span>
+                                    {source.accessLevel && (
+                                      <AccessLevelBadge level={source.accessLevel} size="sm" />
+                                    )}
                                   </div>
                                   <p className="text-gray-600">
                                     {source.text?.substring(0, 150)}...
@@ -369,6 +415,10 @@ export default function IntegratedSearch() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="documents" className="space-y-4">
+          <DocumentManager />
         </TabsContent>
       </Tabs>
 
