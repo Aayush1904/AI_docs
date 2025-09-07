@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation"; 
 import useProject from "@/hooks/use-project";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { ExternalLink, Github, FileText, Download, BarChart2 } from "lucide-react";
 import Link from "next/link";
 import CommitLog from "./commit-log";
@@ -28,7 +28,7 @@ function MermaidChart({ chart }) {
   return <div ref={ref} className="w-full overflow-x-auto" />;
 }
 
-const ProjectPage = () => {
+const ProjectPageContent = () => {
   const searchParams = useSearchParams();
   const projectId = searchParams.get("id"); 
   const { projects } = useProject();
@@ -727,5 +727,18 @@ function VisualizeModal({ project }) {
     </DialogContent>
   );
 }
+
+const ProjectPage = () => {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-[40vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4" />
+        <div className="text-lg font-medium">Loading project...</div>
+      </div>
+    }>
+      <ProjectPageContent />
+    </Suspense>
+  );
+};
 
 export default ProjectPage;
