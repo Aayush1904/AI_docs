@@ -32,7 +32,7 @@ export default function Home() {
             <div className="space-y-4">
               <AnimatedText
                 text="AI-Powered Search Engine"
-                className="font-bold text-[40px] leading-[48px] lg:text-[48px] lg:leading-[60px] xl:text-[58px] xl:leading-[74px] text-gray-900"
+                className="font-bold text-[38px] leading-[48px] lg:text-[48px] lg:leading-[60px] xl:text-[58px] xl:leading-[74px] text-gray-900"
                 animationType="letters"
                 staggerDelay={0.08}
                 duration={0.6}
