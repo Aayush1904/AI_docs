@@ -1,21 +1,63 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import AnimatedText from "@/components/core/animated-text";
-import { HexagonBackground } from "@/components/core/hexagon-background";
-import { CountingNumber } from "@/components/core/counting-number";
-import { Parallax } from "react-parallax";
+// Dynamic imports to prevent SSR issues
+const AnimatedText = dynamic(() => import("@/components/core/animated-text"), {
+  ssr: false,
+});
+const HexagonBackground = dynamic(
+  () =>
+    import("@/components/core/hexagon-background").then((mod) => ({
+      default: mod.HexagonBackground,
+    })),
+  { ssr: false }
+);
+const CountingNumber = dynamic(
+  () =>
+    import("@/components/core/counting-number").then((mod) => ({
+      default: mod.CountingNumber,
+    })),
+  { ssr: false }
+);
+const Parallax = dynamic(
+  () => import("react-parallax").then((mod) => ({ default: mod.Parallax })),
+  { ssr: false }
+);
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import NeuralDocsFeatures from "@/components/kokonutui/card-02";
-import StepWithStickyColorVariant1 from "@/components/shared/HowItWorks";
-import AILiveSearch from "@/components/shared/Demo";
-import Faq02 from "@/components/kokonutui/faq-02";
-import List06 from "@/components/kokonutui/list-06";
+import ClientOnly from "@/components/ClientOnly";
+// Dynamic imports for other components
+const NeuralDocsFeatures = dynamic(
+  () => import("@/components/kokonutui/card-02"),
+  { ssr: false }
+);
+const StepWithStickyColorVariant1 = dynamic(
+  () => import("@/components/shared/HowItWorks"),
+  { ssr: false }
+);
+const AILiveSearch = dynamic(() => import("@/components/shared/Demo"), {
+  ssr: false,
+});
+const Faq02 = dynamic(() => import("@/components/kokonutui/faq-02"), {
+  ssr: false,
+});
+const List06 = dynamic(() => import("@/components/kokonutui/list-06"), {
+  ssr: false,
+});
 
 export default function Home() {
   return (
-    <>
+    <ClientOnly
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      }
+    >
       <section className="relative py-5 md:py-10 bg-gradient-to-br from-blue-50 to-indigo-50">
         <HexagonBackground
           className="absolute inset-0 opacity-70"
@@ -312,6 +354,6 @@ export default function Home() {
       <section className="mt-20">
         <Faq02 />
       </section>
-    </>
+    </ClientOnly>
   );
 }
