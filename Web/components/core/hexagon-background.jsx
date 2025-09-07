@@ -21,11 +21,9 @@ function HexagonBackground({
   const evenRowMarginLeft = hexagonMargin / 2;
  
   const [gridDimensions, setGridDimensions] = React.useState({
-    rows: 0, // Start with 0 to prevent hydration mismatch
-    columns: 0, // Start with 0 to prevent hydration mismatch
+    rows: 10, // Default fallback for SSR
+    columns: 15, // Default fallback for SSR
   });
-  
-  const [isClient, setIsClient] = React.useState(false);
  
   const updateGridDimensions = React.useCallback(() => {
     // Check if we're in the browser
@@ -37,8 +35,7 @@ function HexagonBackground({
   }, [rowSpacing, hexagonWidth]);
 
   React.useEffect(() => {
-    // Mark as client-side and update dimensions
-    setIsClient(true);
+    // Only run on client side
     if (typeof window !== 'undefined') {
       updateGridDimensions();
       window.addEventListener('resize', updateGridDimensions);
@@ -57,7 +54,7 @@ function HexagonBackground({
     >
       <style>{`:root { --hexagon-margin: ${hexagonMargin}px; }`}</style>
       <div className="absolute top-0 -left-0 size-full overflow-hidden">
-        {isClient && Array.from({ length: gridDimensions.rows }).map((_, rowIndex) => (
+        {Array.from({ length: gridDimensions.rows }).map((_, rowIndex) => (
           <div
             key={`row-${rowIndex}`}
             style={{
