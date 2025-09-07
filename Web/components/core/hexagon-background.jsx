@@ -21,20 +21,26 @@ function HexagonBackground({
   const evenRowMarginLeft = hexagonMargin / 2;
  
   const [gridDimensions, setGridDimensions] = React.useState({
-    rows: 0,
-    columns: 0,
+    rows: 10, // Default fallback for SSR
+    columns: 15, // Default fallback for SSR
   });
  
   const updateGridDimensions = React.useCallback(() => {
-    const rows = Math.ceil(window.innerHeight / rowSpacing);
-    const columns = Math.ceil(window.innerWidth / hexagonWidth) + 1;
-    setGridDimensions({ rows, columns });
+    // Check if we're in the browser
+    if (typeof window !== 'undefined') {
+      const rows = Math.ceil(window.innerHeight / rowSpacing);
+      const columns = Math.ceil(window.innerWidth / hexagonWidth) + 1;
+      setGridDimensions({ rows, columns });
+    }
   }, [rowSpacing, hexagonWidth]);
- 
+
   React.useEffect(() => {
-    updateGridDimensions();
-    window.addEventListener('resize', updateGridDimensions);
-    return () => window.removeEventListener('resize', updateGridDimensions);
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      updateGridDimensions();
+      window.addEventListener('resize', updateGridDimensions);
+      return () => window.removeEventListener('resize', updateGridDimensions);
+    }
   }, [updateGridDimensions]);
  
   return (
