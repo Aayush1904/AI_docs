@@ -76,9 +76,20 @@ npm install
 
 ### 3. Environment Setup
 
-Create a `.env.local` file in the root directory with the following variables:
+Copy the example environment file and configure your variables:
+
+```bash
+# Copy the example environment file
+cp env.example .env.local
+```
+
+Then edit `.env.local` with your actual values:
 
 ```env
+# Backend API Configuration
+NEXT_PUBLIC_API_URL="http://localhost:5001"
+NEXT_PUBLIC_NEXT_API_URL=""
+
 # Database
 DATABASE_URL="postgresql://username:password@localhost:5432/neuraldocs"
 
@@ -99,7 +110,6 @@ GITHUB_CLIENT_SECRET="your_github_client_secret"
 
 # Server Configuration
 PORT=5001
-NEXT_PUBLIC_API_URL="http://localhost:5001"
 ```
 
 ### 4. Database Setup

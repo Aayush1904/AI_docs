@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
+import { api } from '@/lib/api';
 
 const CommitLog = ({projectId}) => {
   const [commits, setCommits] = useState([]);
@@ -22,7 +23,7 @@ const CommitLog = ({projectId}) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:5001/api/projects/commits/${projectId}`);
+      const response = await fetch(api.backend.projects.getCommits(projectId));
       if (response.status === 429) {
         const data = await response.json();
         throw new Error(data.error || 'GitHub API rate limit exceeded. Please add a GitHub token or try again later.');
@@ -41,7 +42,7 @@ const CommitLog = ({projectId}) => {
 
   // Fetch comments for a commit
   const fetchComments = async (commitId) => {
-    const res = await fetch(`http://localhost:5001/api/comments?commitId=${commitId}`);
+    const res = await fetch(api.backend.comments.get(commitId));
     const data = await res.json();
     const userMap = {};
     (data.comments || []).forEach(c => { if (c.user) userMap[c.userId] = c.user; });
@@ -62,7 +63,7 @@ const CommitLog = ({projectId}) => {
   const handleAddComment = async (commitId) => {
     const thread = commentThreads[commitId] || {};
     if (!thread.input.trim()) return;
-    const res = await fetch('http://localhost:5001/api/comments', {
+    const res = await fetch(api.backend.comments.create(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -100,7 +101,7 @@ const CommitLog = ({projectId}) => {
   const handleSaveEdit = async (commitId, idx) => {
     const thread = commentThreads[commitId];
     const comment = thread.comments[idx];
-    const res = await fetch('http://localhost:5001/api/comments', {
+    const res = await fetch(api.backend.comments.create(), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: comment.id, text: thread.editValue, userId }),
@@ -123,7 +124,7 @@ const CommitLog = ({projectId}) => {
   const handleDeleteComment = async (commitId, idx) => {
     const thread = commentThreads[commitId];
     const comment = thread.comments[idx];
-    const res = await fetch('http://localhost:5001/api/comments', {
+    const res = await fetch(api.backend.comments.create(), {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: comment.id, userId }),

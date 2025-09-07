@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { api } from "@/lib/api";
 
 const fetchProjects = async () => {
-  const { data } = await axios.get(
-    "http://localhost:5001/api/projects/getProjects"
-  );
+  const { data } = await axios.get(api.backend.projects.getAll());
   return data;
 };
 

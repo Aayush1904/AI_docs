@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import AskQuestionCard from '../project/ask-question-card';
 import useProject from '../../../../hooks/use-project';
 import { Sheet } from '../../../../components/ui/sheet';
+import { api } from '@/lib/api';
 
 const QAPage = () => {
   const { project } = useProject();
@@ -24,7 +25,7 @@ useEffect(() => {
     try {
       console.log('Fetching questions...');
       const response = await fetch(
-        `http://localhost:5001/api/projects/questions/${project.id}`,
+        api.backend.projects.getQuestions(project.id),
         {
          headers: {
       'Accept': 'application/json', 

@@ -8,6 +8,7 @@ import React from 'react'
 import { askQuestion } from './actions';
 import { readStreamableValue } from 'ai/rsc';
 import MDEditor from '@uiw/react-md-editor';
+import { api } from '@/lib/api';
 import CodeReferences from './codeReferences';
 import toast from 'react-hot-toast';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -68,7 +69,7 @@ const handleSaveAnswer = async () => {
   }
   setIsSaving(true);
   try {
-    const response = await fetch(`http://localhost:5001/api/projects/saveAnswer/${project.id}`, {
+    const response = await fetch(api.backend.projects.saveAnswer(project.id), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

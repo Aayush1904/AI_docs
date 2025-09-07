@@ -12,6 +12,7 @@ import { useAuth, useUser } from "@clerk/nextjs";
 import useProject from "@/hooks/use-project";
 import useRefresh from "@/hooks/use-refresh";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 const CreatePage = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -43,7 +44,7 @@ const CreatePage = () => {
 
     try {
       setLoading(true);
-      await axios.post("http://localhost:5001/api/projects/create", {
+      await axios.post(api.backend.projects.create(), {
         name: data.projectName,
         githubUrl: data.repoUrl,
         githubToken: data.githubToken,
