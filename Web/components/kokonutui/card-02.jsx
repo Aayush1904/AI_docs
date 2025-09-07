@@ -1,9 +1,14 @@
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
+import { cn } from "../../lib/utils";
+
+// Dynamically import Lottie with SSR disabled
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
+// Import JSON files
 import Search from "../../public/Search.json";
 import MultiSource from "../../public/MultiSource.json"
 import QA from "../../public/Q&A.json"
 import secure from "../../public/Secure.json"
-import { cn } from "../../lib/utils";
 
 // 🎯 Feature Details
 const features = [
