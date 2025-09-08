@@ -1,44 +1,17 @@
-import { db } from '@/server/db';
-import { auth, clerkClient } from '@clerk/nextjs/server'
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 
 const SyncUser = async () => {
     try {
-        const {userId} = await auth();
-        if(!userId){
-            throw new Error('User not found')
-        }
-        const client = await clerkClient()
-        const user = await client.users.getUser(userId)
-
-        if(!user.emailAddresses[0]?.emailAddress){
-            return notFound()
-        }
-
-        await db.user.upsert({
-            where : {
-                emailAddress : user.emailAddresses[0]?.emailAddress ?? ""
-            },
-            update : {
-                imageUrl : user.imageUrl,
-                firstName : user.firstName,
-                lastName : user.lastName
-            },
-            create : {
-                id : userId,
-                emailAddress : user.emailAddresses[0]?.emailAddress ?? "",
-                imageUrl : user.imageUrl,
-                firstName : user.firstName ,
-                lastName : user.lastName
-            },
-
-        })
-
-        return redirect('/')
+        // Simplified sync user - just redirect to home
+        // TODO: Implement proper user sync when authentication is ready
+        console.log('SyncUser: Redirecting to home');
+        return redirect('/');
     } catch (error) {
         console.error('Error in SyncUser:', error);
-        return redirect('/')
+        return redirect('/');
     }
 }
 
