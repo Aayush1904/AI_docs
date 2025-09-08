@@ -47,7 +47,46 @@ export default function RootLayout({ children }) {
 }
 ```
 
-### 3. **next.config.mjs Updates**
+### 3. **CreateGithub/page.jsx - Build-time Fallback**
+
+```javascript
+// Main component that handles ClerkProvider availability
+const CreatePage = () => {
+  // Check if we're in a build environment or ClerkProvider is not available
+  const isBuildTime =
+    typeof window === "undefined" &&
+    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+  if (isBuildTime) {
+    // Return a simple fallback during build time
+    return (
+      <div className="flex min-h-screen">
+        <main className="flex-1 p-4 md:p-8">
+          <div className="flex flex-col md:flex-row items-center gap-8 justify-center">
+            <div className="w-full max-w-lg">
+              <h1 className="font-semibold text-xl md:text-2xl text-center md:text-left">
+                Link your GitHub Repository
+              </h1>
+              <p className="text-sm text-muted-foreground text-center md:text-left mt-2">
+                Enter the URL of your repository to link it to NeuralDocs
+              </p>
+              <div className="mt-4 p-4 border rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  Please sign in to create a project.
+                </p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  return <CreatePageContent />;
+};
+```
+
+### 4. **next.config.mjs Updates**
 
 ```javascript
 const nextConfig = {

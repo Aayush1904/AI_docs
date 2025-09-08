@@ -20,7 +20,8 @@ import useRefresh from "@/hooks/use-refresh";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 
-const CreatePage = () => {
+// Wrapper component to handle ClerkProvider availability
+const CreatePageContent = () => {
   const { register, handleSubmit, reset } = useForm();
   const { userId, isLoaded } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
@@ -125,6 +126,39 @@ const CreatePage = () => {
         </main>
       </div>
   );
+};
+
+// Main component that handles ClerkProvider availability
+const CreatePage = () => {
+  // Check if we're in a build environment or ClerkProvider is not available
+  const isBuildTime = typeof window === 'undefined' && !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  
+  if (isBuildTime) {
+    // Return a simple fallback during build time
+    return (
+      <div className="flex min-h-screen">
+        <main className="flex-1 p-4 md:p-8">
+          <div className="flex flex-col md:flex-row items-center gap-8 justify-center">
+            <div className="w-full max-w-lg">
+              <h1 className="font-semibold text-xl md:text-2xl text-center md:text-left">
+                Link your GitHub Repository
+              </h1>
+              <p className="text-sm text-muted-foreground text-center md:text-left mt-2">
+                Enter the URL of your repository to link it to NeuralDocs
+              </p>
+              <div className="mt-4 p-4 border rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  Please sign in to create a project.
+                </p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+  
+  return <CreatePageContent />;
 };
 
 export default CreatePage;
