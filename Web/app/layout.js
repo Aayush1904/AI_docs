@@ -1,6 +1,5 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 import QueryProvider from "@/components/shared/QueryProvider";
 
@@ -18,21 +17,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      afterSignInUrl="/search"
-      afterSignUpUrl="/search"
-    >
-      <QueryProvider>
-        <html lang="en">
-          <body className={`${poppins.variable}`}>
-            <Toaster position="top-right" />
-            {children}
-          </body>
-        </html>
-      </QueryProvider>
-    </ClerkProvider>
+    <QueryProvider>
+      <html lang="en">
+        <body className={`${poppins.variable}`}>
+          <Toaster position="top-right" />
+          {children}
+        </body>
+      </html>
+    </QueryProvider>
   );
 }
