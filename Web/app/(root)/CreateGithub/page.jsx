@@ -20,16 +20,21 @@ import useRefresh from "@/hooks/use-refresh";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 
-// Wrapper component to handle ClerkProvider availability
-const CreatePageContent = () => {
-  const { register, handleSubmit, reset } = useForm();
-  const { userId, isLoaded } = useAuth();
-  const { user, isLoaded: userLoaded } = useUser();
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const { projectId } = useProject();
-  // Refresh hook
-  const refresh = useRefresh();
+// Check if we're in a build environment
+const isBuildTime = typeof window === 'undefined' && !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+// Wrapper component to handle ClerkProvider availability - only define if not build time
+let CreatePageContent;
+if (!isBuildTime) {
+  CreatePageContent = () => {
+    const { register, handleSubmit, reset } = useForm();
+    const { userId, isLoaded } = useAuth();
+    const { user, isLoaded: userLoaded } = useUser();
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+    const { projectId } = useProject();
+    // Refresh hook
+    const refresh = useRefresh();
 
   // Handle project creation
   async function onSubmit(data) {
@@ -125,14 +130,12 @@ const CreatePageContent = () => {
           </div>
         </main>
       </div>
-  );
-};
+    );
+  };
+}
 
 // Main component that handles ClerkProvider availability
 const CreatePage = () => {
-  // Check if we're in a build environment or ClerkProvider is not available
-  const isBuildTime = typeof window === 'undefined' && !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  
   if (isBuildTime) {
     // Return a simple fallback during build time
     return (
@@ -158,7 +161,7 @@ const CreatePage = () => {
     );
   }
   
-  return <CreatePageContent />;
+  return CreatePageContent ? <CreatePageContent /> : null;
 };
 
 export default CreatePage;
