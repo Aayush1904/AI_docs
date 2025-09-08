@@ -1,4 +1,5 @@
 import "./globals.css";
+import QueryProvider from "@/components/shared/QueryProvider";
 
 export const metadata = {
   title: "NeuralDocs",
@@ -7,7 +8,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }
