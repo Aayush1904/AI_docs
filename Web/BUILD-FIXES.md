@@ -17,6 +17,11 @@
 - **Problem**: Pages with client-side auth trying to be statically generated
 - **Solution**: Added dynamic rendering and Next.js config updates
 
+### 4. **Variable Naming Conflict**
+
+- **Problem**: `dynamic` import conflicted with `dynamic` export in CreateGithub page
+- **Solution**: Renamed import to `dynamicImport` to avoid conflict
+
 ## ✅ Changes Made
 
 ### 1. **sync-user/page.jsx**
@@ -29,8 +34,10 @@ export const dynamic = "force-dynamic";
 ### 2. **CreateGithub/page.jsx**
 
 ```javascript
-// Added at the top
+// Fixed naming conflict and added dynamic rendering
+import dynamicImport from "next/dynamic";
 export const dynamic = "force-dynamic";
+const Lottie = dynamicImport(() => import("lottie-react"), { ssr: false });
 ```
 
 ### 3. **layout.js**
@@ -56,11 +63,13 @@ export default function RootLayout({ children }) {
 ```javascript
 const nextConfig = {
   output: "standalone",
-  experimental: {
-    // Disable static optimization for dynamic routes
-    missingSuspenseWithCSRBailout: false,
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
+    return config;
   },
-  // ... rest of config
 };
 ```
 
