@@ -2,15 +2,13 @@
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import NavItems from './NavItems';
 import MobileNav from './MobileNav';
 import Logo from './logo';
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
-import { MessageCircle } from 'lucide-react';
-import { Bell } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { MessageCircle, Bell } from 'lucide-react';
 
 const Header = () => {
   const [chatOpen, setChatOpen] = React.useState(false);

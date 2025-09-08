@@ -1,4 +1,9 @@
 {
   "buildCommand": "npm run build",
-  "installCommand": "npm install && npx prisma generate"
+  "installCommand": "rm -rf node_modules package-lock.json && npm install && npx prisma generate",
+  "functions": {
+    "app/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }
