@@ -1,9 +1,17 @@
 {
-  "buildCommand": "npm run build",
-  "installCommand": "rm -rf node_modules package-lock.json && npm install && npx prisma generate",
+  "buildCommand": "rm -rf .next && npm run build",
+  "installCommand": "rm -rf node_modules package-lock.json .next && npm install && npx prisma generate",
   "functions": {
     "app/**/*.js": {
       "runtime": "nodejs18.x"
     }
-  }
+  },
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ]
 }

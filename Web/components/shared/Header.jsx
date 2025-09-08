@@ -1,5 +1,4 @@
 "use client";
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
@@ -83,11 +82,9 @@ const Header = () => {
           <span className="text-lg md:text-2xl font-bold text-black">Neural Docs</span>
         </Link>
 
-        <SignedIn>
-          <nav className='hidden md:flex md:justify-between md:items-center w-full max-w-xs'>
-            <NavItems />
-          </nav>
-        </SignedIn>
+        <nav className='hidden md:flex md:justify-between md:items-center w-full max-w-xs'>
+          <NavItems />
+        </nav>
 
         <div className='flex items-center gap-4'>
           {/* Notification Bell */}
@@ -171,17 +168,12 @@ const Header = () => {
               </div>
             </DialogContent>
           </Dialog>
-          <SignedIn>
-            <UserButton afterSignOutUrl='/' />
-            <MobileNav />
-          </SignedIn>
-          <SignedOut>
-            <Button asChild className="rounded-full bg-primary text-white hover:bg-teal-600 transition duration-200" size="lg">
-              <Link href="/sign-in">
-                Login
-              </Link>
-            </Button>
-          </SignedOut>
+          <Button asChild className="rounded-full bg-primary text-white hover:bg-teal-600 transition duration-200" size="lg">
+            <Link href="/sign-in">
+              Login
+            </Link>
+          </Button>
+          <MobileNav />
         </div>
       </div>
     </header>
