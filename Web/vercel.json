@@ -5,5 +5,13 @@
     "app/**/*.js": {
       "runtime": "nodejs18.x"
     }
-  }
+  },
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ]
 }
