@@ -20,6 +20,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/prisma ./prisma
 COPY . .
 
+# Set build-time environment variables for Clerk
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_placeholder"
+ENV CLERK_SECRET_KEY="sk_test_placeholder"
+
 # Generate Prisma client and build the application
 RUN npm run build
 
