@@ -2,6 +2,9 @@
 
 import dynamic from "next/dynamic";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 // Dynamically import Lottie with SSR disabled
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 import React, { useState } from "react";

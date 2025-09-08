@@ -2,6 +2,9 @@ import { db } from '@/server/db';
 import { auth, clerkClient } from '@clerk/nextjs/server'
 import { notFound, redirect } from 'next/navigation';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 
 const SyncUser = async () => {
     try {
