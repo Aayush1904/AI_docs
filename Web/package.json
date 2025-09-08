@@ -7,7 +7,6 @@
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "npx prisma generate",
     "vercel-build": "npx prisma generate && next build",
     "prebuild": "npx prisma generate",
     "test:prisma": "node scripts/test-prisma.js"
